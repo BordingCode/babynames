@@ -36,8 +36,11 @@ const Swipe = (() => {
         const seed = App.getSeed(App.activeProfile);
         const shuffled = App.seededShuffle(ids, seed);
 
-        // Load seen names for this filter set
+        // Migrate old seenData format (numeric index) to seenIds format (name IDs)
         const filterKey = JSON.stringify(filters);
+        migrateOldSeenData(shuffled, filterKey);
+
+        // Load seen names for this filter set
         const seenIds = new Set(App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey) || []);
 
         // Split into seen and unseen
@@ -61,6 +64,28 @@ const Swipe = (() => {
             deck = unseen;
         }
         deckIndex = 0;
+    }
+
+    // One-time migration from old seenData (deckIndex number) to seenIds (array of IDs)
+    function migrateOldSeenData(shuffled, filterKey) {
+        const oldKey = 'seenData_' + App.activeProfile;
+        const oldData = App.LS.get(oldKey);
+        if (!oldData) return;
+
+        // Convert numeric deckIndex to actual seen name IDs for current filter
+        if (oldData[filterKey] && !App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey)) {
+            const idx = oldData[filterKey];
+            const seenIds = shuffled.slice(0, idx);
+            App.LS.set('seenIds_' + App.activeProfile + '_' + filterKey, seenIds);
+        }
+
+        // Clean up old format
+        delete oldData[filterKey];
+        if (Object.keys(oldData).length === 0) {
+            localStorage.removeItem('bn_seenData_' + App.activeProfile);
+        } else {
+            App.LS.set(oldKey, oldData);
+        }
     }
 
     function saveDeckIndex() {
@@ -278,8 +303,11 @@ const Swipe = (() => {
     }
 
     function updateProgress() {
-        document.getElementById('swipe-count').textContent = deckIndex;
-        document.getElementById('swipe-total').textContent = deck.length;
+        const filterKey = JSON.stringify(filters);
+        const seenIds = App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey) || [];
+        const totalSeen = seenIds.length + deckIndex;
+        document.getElementById('swipe-count').textContent = totalSeen;
+        document.getElementById('swipe-total').textContent = totalSeen + deck.length - deckIndex;
     }
 
     // Swipe mechanics

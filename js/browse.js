@@ -31,7 +31,7 @@ const Browse = (() => {
             // Tab filter
             if (currentTab === 'liked' && !liked.has(i)) continue;
             // Search filter
-            if (query && !name.name.toLowerCase().startsWith(query)) continue;
+            if (query && !name.name.toLowerCase().includes(query)) continue;
             filteredNames.push(i);
         }
     }

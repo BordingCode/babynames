@@ -148,13 +148,19 @@ const Match = (() => {
                     }
                 }
 
-                // Store as partner's liked (the other profile)
+                // Merge with partner's existing likes (don't overwrite)
                 const otherProfile = App.activeProfile === 0 ? 1 : 0;
-                App.setLiked(otherProfile, imported);
+                const existing = new Set(App.getLiked(otherProfile));
+                let newCount = 0;
+                imported.forEach(id => {
+                    if (!existing.has(id)) newCount++;
+                    existing.add(id);
+                });
+                App.setLiked(otherProfile, Array.from(existing));
 
                 overlay.remove();
                 updateProfileCards();
-                alert('Importeret ' + imported.length + ' favoritter fra din partner!');
+                alert('Importeret ' + newCount + ' nye favoritter fra din partner! (' + existing.size + ' i alt)');
             } catch (e) {
                 alert('Ugyldig kode. Prøv igen.');
             }
@@ -171,6 +177,7 @@ const Match = (() => {
         }
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        canvas.style.pointerEvents = 'none';
         const ctx = canvas.getContext('2d');
 
         const colors = ['#E8A0BF', '#D4B5E6', '#A8C5A0', '#B8D4E3', '#FFD0A0', '#FF9999'];
