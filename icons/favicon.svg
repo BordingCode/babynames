@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="20" fill="#FFF8F0"/>
+  <path d="M50 80 C50 80, 15 55, 15 35 C15 22, 25 15, 35 15 C42 15, 47 19, 50 25 C53 19, 58 15, 65 15 C75 15, 85 22, 85 35 C85 55, 50 80, 50 80Z" fill="#E8A0BF"/>
+  <text x="50" y="55" text-anchor="middle" font-size="24" font-weight="bold" fill="white" font-family="sans-serif">B</text>
+</svg>

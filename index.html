@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FFF8F0">
+    <title>Babynavne</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/shared.css?v=1">
+    <link rel="stylesheet" href="css/swipe.css?v=1">
+    <link rel="stylesheet" href="css/browse.css?v=1">
+    <link rel="stylesheet" href="css/match.css?v=1">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="screen-login" class="screen active">
+        <div class="login-container">
+            <div class="login-logo">
+                <span class="logo-heart">♥</span>
+                <h1>Babynavne</h1>
+                <p class="login-subtitle">Find det perfekte navn sammen</p>
+            </div>
+
+            <!-- PIN Entry -->
+            <div id="pin-entry">
+                <p class="pin-label">Indtast jeres PIN</p>
+                <div class="pin-dots">
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                </div>
+                <div class="pin-pad">
+                    <button class="pin-btn" data-num="1">1</button>
+                    <button class="pin-btn" data-num="2">2</button>
+                    <button class="pin-btn" data-num="3">3</button>
+                    <button class="pin-btn" data-num="4">4</button>
+                    <button class="pin-btn" data-num="5">5</button>
+                    <button class="pin-btn" data-num="6">6</button>
+                    <button class="pin-btn" data-num="7">7</button>
+                    <button class="pin-btn" data-num="8">8</button>
+                    <button class="pin-btn" data-num="9">9</button>
+                    <button class="pin-btn pin-btn-empty"></button>
+                    <button class="pin-btn" data-num="0">0</button>
+                    <button class="pin-btn pin-btn-del" data-action="delete">←</button>
+                </div>
+                <button id="btn-first-time" class="link-btn">Første gang? Opret profil</button>
+            </div>
+
+            <!-- Profile Selection (after PIN) -->
+            <div id="profile-select" class="hidden">
+                <p class="pin-label">Hvem swiper?</p>
+                <div class="profile-buttons">
+                    <button class="profile-btn" data-profile="0">
+                        <span class="profile-avatar">👩</span>
+                        <span class="profile-name" id="profile-name-0">Partner 1</span>
+                    </button>
+                    <button class="profile-btn" data-profile="1">
+                        <span class="profile-avatar">👨</span>
+                        <span class="profile-name" id="profile-name-1">Partner 2</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Setup (first time) -->
+            <div id="setup-form" class="hidden">
+                <p class="pin-label">Opret jeres profil</p>
+                <div class="setup-fields">
+                    <div class="setup-field">
+                        <label>Vælg en fælles PIN (4 cifre)</label>
+                        <div class="pin-dots" id="setup-pin-dots">
+                            <span class="pin-dot"></span>
+                            <span class="pin-dot"></span>
+                            <span class="pin-dot"></span>
+                            <span class="pin-dot"></span>
+                        </div>
+                        <div class="pin-pad" id="setup-pin-pad">
+                            <button class="pin-btn" data-num="1">1</button>
+                            <button class="pin-btn" data-num="2">2</button>
+                            <button class="pin-btn" data-num="3">3</button>
+                            <button class="pin-btn" data-num="4">4</button>
+                            <button class="pin-btn" data-num="5">5</button>
+                            <button class="pin-btn" data-num="6">6</button>
+                            <button class="pin-btn" data-num="7">7</button>
+                            <button class="pin-btn" data-num="8">8</button>
+                            <button class="pin-btn" data-num="9">9</button>
+                            <button class="pin-btn pin-btn-empty"></button>
+                            <button class="pin-btn" data-num="0">0</button>
+                            <button class="pin-btn pin-btn-del" data-action="delete">←</button>
+                        </div>
+                    </div>
+                    <div id="setup-names" class="hidden">
+                        <div class="setup-field">
+                            <label for="setup-name1">Partner 1</label>
+                            <input type="text" id="setup-name1" placeholder="Navn..." maxlength="20">
+                        </div>
+                        <div class="setup-field">
+                            <label for="setup-name2">Partner 2</label>
+                            <input type="text" id="setup-name2" placeholder="Navn..." maxlength="20">
+                        </div>
+                        <button id="btn-create" class="primary-btn" disabled>Opret</button>
+                    </div>
+                </div>
+                <button id="btn-back-login" class="link-btn">Tilbage til login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swipe Screen -->
+    <div id="screen-swipe" class="screen">
+        <div class="screen-header">
+            <button id="btn-filter" class="icon-btn" title="Filtre">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/><circle cx="6" cy="6" r="2" fill="currentColor"/><circle cx="10" cy="12" r="2" fill="currentColor"/><circle cx="14" cy="18" r="2" fill="currentColor"/></svg>
+            </button>
+            <div class="swipe-progress">
+                <span id="swipe-count">0</span> / <span id="swipe-total">0</span>
+            </div>
+            <button id="btn-switch-profile" class="icon-btn" title="Skift profil">
+                <span id="active-profile-initial">?</span>
+            </button>
+        </div>
+
+        <!-- Filter Panel -->
+        <div id="filter-panel" class="hidden">
+            <div class="filter-section">
+                <h3>Startbogstav</h3>
+                <div class="filter-letters" id="filter-letters"></div>
+            </div>
+            <div class="filter-section">
+                <h3>Længde</h3>
+                <div class="filter-chips" id="filter-length">
+                    <button class="chip" data-len="short">Kort (2-4)</button>
+                    <button class="chip" data-len="medium">Medium (5-6)</button>
+                    <button class="chip" data-len="long">Lang (7+)</button>
+                </div>
+            </div>
+            <div class="filter-section">
+                <h3>Popularitet</h3>
+                <div class="filter-chips" id="filter-pop">
+                    <button class="chip" data-pop="popular">Populær (top 500)</button>
+                    <button class="chip" data-pop="common">Almindelig</button>
+                    <button class="chip" data-pop="uncommon">Ualmindelig</button>
+                    <button class="chip" data-pop="rare">Sjælden</button>
+                </div>
+            </div>
+            <div class="filter-section">
+                <h3>Stavelser</h3>
+                <div class="filter-chips" id="filter-syl">
+                    <button class="chip" data-syl="1">1</button>
+                    <button class="chip" data-syl="2">2</button>
+                    <button class="chip" data-syl="3">3</button>
+                    <button class="chip" data-syl="4">4+</button>
+                </div>
+            </div>
+            <div class="filter-section">
+                <h3>Endelse</h3>
+                <div class="filter-chips" id="filter-end">
+                    <button class="chip" data-end="a">-a</button>
+                    <button class="chip" data-end="e">-e</button>
+                    <button class="chip" data-end="ie">-ie</button>
+                    <button class="chip" data-end="ine">-ine</button>
+                    <button class="chip" data-end="ina">-ina</button>
+                    <button class="chip" data-end="ia">-ia</button>
+                    <button class="chip" data-end="y">-y</button>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <span id="filter-match-count">0 navne matcher</span>
+                <button id="btn-apply-filters" class="primary-btn">Anvend</button>
+                <button id="btn-clear-filters" class="link-btn">Nulstil filtre</button>
+            </div>
+        </div>
+
+        <!-- Active filter chips -->
+        <div id="active-filters" class="hidden"></div>
+
+        <!-- Card Stack -->
+        <div class="card-stack" id="card-stack">
+            <div class="empty-state hidden" id="swipe-empty">
+                <span class="empty-icon">✨</span>
+                <p>Du har set alle navne!</p>
+                <p class="text-muted">Prøv at ændre dine filtre</p>
+            </div>
+        </div>
+
+        <!-- Swipe Actions -->
+        <div class="swipe-actions">
+            <button class="action-btn action-skip" id="btn-skip" title="Spring over">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button class="action-btn action-like" id="btn-like" title="Synes om">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Browse Screen -->
+    <div id="screen-browse" class="screen">
+        <div class="browse-header">
+            <div class="search-bar">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="search-input" placeholder="Søg efter navn...">
+            </div>
+            <div class="browse-tabs">
+                <button class="tab active" data-tab="all">Alle navne</button>
+                <button class="tab" data-tab="liked">Favoritter</button>
+            </div>
+        </div>
+        <div class="alphabet-bar" id="alphabet-bar"></div>
+        <div class="name-list-container">
+            <div class="name-list" id="name-list"></div>
+        </div>
+    </div>
+
+    <!-- Match Screen -->
+    <div id="screen-match" class="screen">
+        <div class="match-header">
+            <h2>Match</h2>
+        </div>
+        <div class="match-content">
+            <div class="match-profiles">
+                <div class="match-profile">
+                    <span class="match-avatar">👩</span>
+                    <span class="match-name" id="match-name-0">Partner 1</span>
+                    <span class="match-count" id="match-count-0">0 navne</span>
+                </div>
+                <div class="match-heart">♥</div>
+                <div class="match-profile">
+                    <span class="match-avatar">👨</span>
+                    <span class="match-name" id="match-name-1">Partner 2</span>
+                    <span class="match-count" id="match-count-1">0 navne</span>
+                </div>
+            </div>
+            <button id="btn-find-matches" class="primary-btn big-btn">Find jeres matches!</button>
+            <div id="match-results" class="hidden">
+                <div id="match-celebration" class="hidden">
+                    <span class="celebration-count" id="celebration-count">0</span>
+                    <span class="celebration-text">navne I begge elsker!</span>
+                </div>
+                <div class="match-list" id="match-list"></div>
+            </div>
+            <div class="match-export">
+                <h3>Deling på tværs af enheder</h3>
+                <p class="text-muted">Del favoritter med din partner på en anden enhed</p>
+                <button id="btn-export" class="secondary-btn">Eksportér mine favoritter</button>
+                <button id="btn-import" class="secondary-btn">Importér partners favoritter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-btn active" data-screen="swipe">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8" stroke-width="1.5"/></svg>
+            <span>Swipe</span>
+        </button>
+        <button class="nav-btn" data-screen="browse">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>Søg</span>
+        </button>
+        <button class="nav-btn" data-screen="match">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span>Match</span>
+        </button>
+    </nav>
+
+    <script src="js/names.js?v=1"></script>
+    <script src="js/app.js?v=1"></script>
+    <script src="js/swipe.js?v=1"></script>
+    <script src="js/browse.js?v=1"></script>
+    <script src="js/match.js?v=1"></script>
+</body>
+</html>

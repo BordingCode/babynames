@@ -1,0 +1,288 @@
+/* === Swipe Screen Styles === */
+
+/* Filter Panel */
+#filter-panel {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 60vh;
+    animation: fadeIn 0.2s ease;
+}
+
+.filter-section {
+    margin-bottom: 16px;
+}
+
+.filter-section h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.filter-letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.filter-letters .chip {
+    padding: 4px 8px;
+    font-size: 13px;
+    min-width: 32px;
+    text-align: center;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+#filter-match-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.filter-actions .primary-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+}
+
+/* Active Filters Bar */
+#active-filters {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+#active-filters .chip {
+    font-size: 12px;
+    padding: 4px 10px;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+#active-filters .chip::after {
+    content: ' ✕';
+    font-size: 10px;
+}
+
+/* Card Stack */
+.card-stack {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.name-card {
+    position: absolute;
+    width: calc(100% - 40px);
+    max-width: 360px;
+    aspect-ratio: 3/4;
+    max-height: calc(100% - 20px);
+    border-radius: 20px;
+    background: var(--card);
+    box-shadow: 0 4px 20px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    will-change: transform;
+    overflow: hidden;
+}
+
+.name-card.back-card {
+    transform: scale(0.95);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Card Front */
+.card-front {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+}
+
+.card-decoration {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 20px;
+    opacity: 0.3;
+    color: var(--accent);
+}
+
+.card-name {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.card-hint {
+    font-size: 13px;
+    color: var(--text-lighter);
+    margin-top: 12px;
+}
+
+/* Card Back (detail view) */
+.card-back {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 16px;
+}
+
+.card-back .card-name {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.card-detail {
+    text-align: center;
+}
+
+.card-detail-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-lighter);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.card-detail-value {
+    font-size: 16px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.name-card.flipped .card-front {
+    display: none;
+}
+
+.name-card.flipped .card-back {
+    display: flex;
+}
+
+/* Swipe stamps */
+.card-stamp {
+    position: absolute;
+    top: 24px;
+    font-size: 32px;
+    font-weight: 800;
+    padding: 4px 16px;
+    border-radius: 8px;
+    border: 4px solid;
+    opacity: 0;
+    transition: opacity 0.1s;
+    transform: rotate(-15deg);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.stamp-like {
+    left: 16px;
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.stamp-skip {
+    right: 16px;
+    color: var(--danger);
+    border-color: var(--danger);
+    transform: rotate(15deg);
+}
+
+/* Swipe Action Buttons */
+.swipe-actions {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 16px 20px 20px;
+    flex-shrink: 0;
+}
+
+.action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+.action-skip {
+    background: var(--card);
+    color: var(--danger);
+}
+
+.action-like {
+    background: var(--card);
+    color: var(--accent);
+}
+
+/* Card gradient backgrounds */
+.card-gradient-1 { background: linear-gradient(135deg, #FFF0F5, #FFE4EE); }
+.card-gradient-2 { background: linear-gradient(135deg, #F0F0FF, #E8E0F5); }
+.card-gradient-3 { background: linear-gradient(135deg, #F0FFF4, #E0F5E8); }
+.card-gradient-4 { background: linear-gradient(135deg, #FFF8E0, #FFF0D0); }
+.card-gradient-5 { background: linear-gradient(135deg, #F0F8FF, #E0F0F8); }
+.card-gradient-6 { background: linear-gradient(135deg, #FFF0F0, #FFE8E0); }
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
