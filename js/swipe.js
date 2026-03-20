@@ -37,15 +37,29 @@ const Swipe = (() => {
         deck = App.seededShuffle(ids, seed);
 
         // Resume position: skip already-seen names
-        const liked = new Set(App.getLiked(App.activeProfile));
-        const seen = App.getSeen(App.activeProfile);
-        // Find how far we were. We track seen count, and rebuild deck consistently from seed.
-        // Already-seen names (liked or skipped) are the first `seen` in the shuffled order.
-        // But if filters changed, deck changes. Store filter-specific seen count.
         const filterKey = JSON.stringify(filters);
         const seenData = App.LS.get('seenData_' + App.activeProfile) || {};
         deckIndex = seenData[filterKey] || 0;
         if (deckIndex > deck.length) deckIndex = 0;
+
+        // Prioritize: put the other partner's liked names first (among unseen names)
+        const otherProfile = App.activeProfile === 0 ? 1 : 0;
+        const otherLiked = new Set(App.getLiked(otherProfile));
+        if (otherLiked.size > 0 && deckIndex < deck.length) {
+            // Split unseen portion into partner-liked and rest
+            const seen = deck.slice(0, deckIndex);
+            const unseen = deck.slice(deckIndex);
+            const prioritized = [];
+            const rest = [];
+            for (const id of unseen) {
+                if (otherLiked.has(id)) {
+                    prioritized.push(id);
+                } else {
+                    rest.push(id);
+                }
+            }
+            deck = seen.concat(prioritized, rest);
+        }
     }
 
     function saveDeckIndex() {
