@@ -34,21 +34,19 @@ const Swipe = (() => {
         }
         // Shuffle with seeded RNG
         const seed = App.getSeed(App.activeProfile);
-        deck = App.seededShuffle(ids, seed);
+        const shuffled = App.seededShuffle(ids, seed);
 
-        // Resume position: skip already-seen names
+        // Load seen names for this filter set
         const filterKey = JSON.stringify(filters);
-        const seenData = App.LS.get('seenData_' + App.activeProfile) || {};
-        deckIndex = seenData[filterKey] || 0;
-        if (deckIndex > deck.length) deckIndex = 0;
+        const seenIds = new Set(App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey) || []);
 
-        // Prioritize: put the other partner's liked names first (among unseen names)
+        // Split into seen and unseen
+        const unseen = shuffled.filter(id => !seenIds.has(id));
+
+        // Prioritize: put the other partner's liked names first among unseen
         const otherProfile = App.activeProfile === 0 ? 1 : 0;
         const otherLiked = new Set(App.getLiked(otherProfile));
-        if (otherLiked.size > 0 && deckIndex < deck.length) {
-            // Split unseen portion into partner-liked and rest
-            const seen = deck.slice(0, deckIndex);
-            const unseen = deck.slice(deckIndex);
+        if (otherLiked.size > 0) {
             const prioritized = [];
             const rest = [];
             for (const id of unseen) {
@@ -58,18 +56,23 @@ const Swipe = (() => {
                     rest.push(id);
                 }
             }
-            deck = seen.concat(prioritized, rest);
+            deck = prioritized.concat(rest);
+        } else {
+            deck = unseen;
         }
+        deckIndex = 0;
     }
 
     function saveDeckIndex() {
         const filterKey = JSON.stringify(filters);
-        const seenData = App.LS.get('seenData_' + App.activeProfile) || {};
-        seenData[filterKey] = deckIndex;
-        App.LS.set('seenData_' + App.activeProfile, seenData);
-        // Also update total seen count
-        const totalSeen = Object.values(seenData).reduce((a, b) => a + b, 0);
-        App.setSeen(App.activeProfile, totalSeen);
+        // Save IDs of all seen names (already seen + newly seen from current deck)
+        const prevSeen = App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey) || [];
+        const seenSet = new Set(prevSeen);
+        for (let i = 0; i < deckIndex; i++) {
+            seenSet.add(deck[i]);
+        }
+        App.LS.set('seenIds_' + App.activeProfile + '_' + filterKey, Array.from(seenSet));
+        App.setSeen(App.activeProfile, seenSet.size);
     }
 
     function passesFilters(name) {
@@ -95,7 +98,8 @@ const Swipe = (() => {
             if (filters.pop === 'popular' && pop < getPopThreshold(500)) return false;
             if (filters.pop === 'common' && (pop < getPopThreshold(2000) || pop >= getPopThreshold(500))) return false;
             if (filters.pop === 'uncommon' && (pop < 10 || pop >= getPopThreshold(2000))) return false;
-            if (filters.pop === 'rare' && pop >= 10) return false;
+            if (filters.pop === 'rare' && (pop < 1 || pop >= 10)) return false;
+            if (filters.pop === 'unknown' && pop !== 0) return false;
         }
 
         // Syllable filter
@@ -224,7 +228,7 @@ const Swipe = (() => {
         if (name.pop > 0) {
             popVal.textContent = name.pop.toLocaleString('da-DK') + ' kvinder i Danmark';
         } else {
-            popVal.textContent = 'Sjældent navn';
+            popVal.textContent = 'Ingen data';
         }
         popDetail.appendChild(popVal);
         back.appendChild(popDetail);
@@ -505,7 +509,7 @@ const Swipe = (() => {
             labels.push(map[filters.length]);
         }
         if (filters.pop) {
-            const map = { popular: 'Populær', common: 'Almindelig', uncommon: 'Ualmindelig', rare: 'Sjælden' };
+            const map = { popular: 'Populær', common: 'Almindelig', uncommon: 'Ualmindelig', rare: 'Sjælden', unknown: 'Ukendt' };
             labels.push(map[filters.pop]);
         }
         if (filters.syl) labels.push(filters.syl + ' stav.');
@@ -524,7 +528,7 @@ const Swipe = (() => {
                         if (filters.letters.length === 0) delete filters.letters;
                     }
                     else if (label === 'Kort' || label === 'Medium' || label === 'Lang') delete filters.length;
-                    else if (label === 'Populær' || label === 'Almindelig' || label === 'Ualmindelig' || label === 'Sjælden') delete filters.pop;
+                    else if (label === 'Populær' || label === 'Almindelig' || label === 'Ualmindelig' || label === 'Sjælden' || label === 'Ukendt') delete filters.pop;
                     else if (label.includes('stav.')) delete filters.syl;
                     else if (label.startsWith('-')) delete filters.end;
                     App.setFilters(App.activeProfile, filters);
