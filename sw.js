@@ -47,3 +47,5 @@ self.addEventListener('fetch', e => {
             .catch(() => caches.match(e.request))
     );
 });
+
+// hub-stats tracker v1
