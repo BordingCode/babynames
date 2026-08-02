@@ -257,7 +257,9 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: safe center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 20px;
     max-width: 400px;
     margin: 0 auto;
