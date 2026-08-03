@@ -394,6 +394,27 @@ const Swipe = (() => {
         fly(currentCard, direction);
     }
 
+    // Area-restricted search: a like is a signal about where in the name
+    // space you are, so pull a few unseen names sharing the same ending
+    // and a similar syllable count up to right after this card, before the
+    // deck falls back to its broad random shuffle. Only "end" and "syl" are
+    // used — "origin"/"meaning" are null for every name right now.
+    function pullNeighbors(likedId) {
+        const liked = NAMES[likedId];
+        const scanLimit = Math.min(deck.length, deckIndex + 1 + 2000);
+        const matchIdx = [];
+        for (let i = deckIndex + 1; i < scanLimit && matchIdx.length < 5; i++) {
+            const n = NAMES[deck[i]];
+            if (n.end === liked.end && Math.abs(n.syl - liked.syl) <= 1) {
+                matchIdx.push(i);
+            }
+        }
+        if (matchIdx.length === 0) return;
+        const neighborIds = matchIdx.map(i => deck[i]);
+        for (let k = matchIdx.length - 1; k >= 0; k--) deck.splice(matchIdx[k], 1);
+        deck.splice(deckIndex + 1, 0, ...neighborIds);
+    }
+
     function fly(card, direction) {
         const isRight = direction === 'right';
         const nameId = parseInt(card.dataset.nameId, 10);
@@ -410,6 +431,7 @@ const Swipe = (() => {
                 liked.push(nameId);
                 App.setLiked(App.activeProfile, liked);
             }
+            pullNeighbors(nameId);
         }
 
         // Haptic
