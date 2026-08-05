@@ -305,7 +305,9 @@ const Swipe = (() => {
     function updateProgress() {
         const filterKey = JSON.stringify(filters);
         const seenIds = App.LS.get('seenIds_' + App.activeProfile + '_' + filterKey) || [];
-        const totalSeen = seenIds.length + deckIndex;
+        // seenIds already includes deck[0..deckIndex) — saveDeckIndex() persists that
+        // union before updateProgress() runs, so deckIndex must NOT be added again here.
+        const totalSeen = seenIds.length;
         document.getElementById('swipe-count').textContent = totalSeen;
         document.getElementById('swipe-total').textContent = totalSeen + deck.length - deckIndex;
     }
