@@ -36,39 +36,52 @@ const Match = (() => {
         const resultsDiv = document.getElementById('match-results');
         const celebDiv = document.getElementById('match-celebration');
         const listDiv = document.getElementById('match-list');
+        const countEl = document.getElementById('celebration-count');
 
         resultsDiv.classList.remove('hidden');
         celebDiv.classList.remove('hidden');
 
-        document.getElementById('celebration-count').textContent = matches.length;
-
-        // Show match list
+        // Beat 1: a short "drum roll" — the number itself is withheld for a moment.
         listDiv.innerHTML = '';
-        if (matches.length === 0) {
-            listDiv.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px;">Ingen matches endnu. Begge skal swipe flere navne!</p>';
-        } else {
-            matches.forEach(id => {
-                const item = document.createElement('div');
-                item.className = 'match-item';
+        countEl.textContent = '';
+        countEl.classList.add('count-pending');
 
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'match-item-name';
-                nameSpan.textContent = NAMES[id].name;
-                item.appendChild(nameSpan);
+        setTimeout(() => {
+            countEl.classList.remove('count-pending');
+            countEl.textContent = matches.length;
 
-                const heart = document.createElement('span');
-                heart.className = 'match-item-heart';
-                heart.textContent = '♥';
-                item.appendChild(heart);
+            if (matches.length === 0) {
+                listDiv.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px;">Ingen matches endnu. Begge skal swipe flere navne!</p>';
+                if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                return;
+            }
 
-                listDiv.appendChild(item);
+            // Beat 2: reveal each matched name one at a time, like a draft reveal.
+            matches.forEach((id, i) => {
+                setTimeout(() => {
+                    const item = document.createElement('div');
+                    item.className = 'match-item';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'match-item-name';
+                    nameSpan.textContent = NAMES[id].name;
+                    item.appendChild(nameSpan);
+
+                    const heart = document.createElement('span');
+                    heart.className = 'match-item-heart';
+                    heart.textContent = '♥';
+                    item.appendChild(heart);
+
+                    listDiv.appendChild(item);
+
+                    // Confetti lands on the last name, not before.
+                    if (i === matches.length - 1) {
+                        launchConfetti();
+                        if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                    }
+                }, i * 300);
             });
-
-            // Confetti!
-            if (matches.length > 0) launchConfetti();
-        }
-
-        if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+        }, 600);
     }
 
     // Export/Import
