@@ -210,6 +210,13 @@
     justify-content: flex-end;
 }
 
+/* Popularity guess modal (swipe.js) */
+.pop-guess-modal p { color: var(--text-secondary, inherit); margin-bottom: 16px; }
+.pop-guess-choices { display: flex; gap: 8px; margin-bottom: 16px; }
+.pop-guess-choices .chip { flex: 1; text-align: center; padding: 12px; font-size: 15px; }
+.pop-guess-choices .chip:disabled { opacity: 0.6; }
+.pop-guess-answer { font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
+
 /* Confetti canvas */
 #confetti-canvas {
     position: fixed;

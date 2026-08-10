@@ -21,7 +21,60 @@ const Swipe = (() => {
         if (!initialized) {
             initListeners();
             initialized = true;
+            maybeShowPopularityGuess();
         }
+    }
+
+    // One-time "predict, then observe" moment: before the couple ever swipes,
+    // let them guess which of two familiar names has more registered women in
+    // Denmark, then show the real numbers. The "pop" figure is a lifetime
+    // total across all ages, not a birth trend — this is the misconception
+    // the "Populær (top 500)" filter otherwise lets you carry all the way
+    // through the deck without ever noticing.
+    function maybeShowPopularityGuess() {
+        const key = 'popGuessSeen_' + App.activeProfile;
+        if (App.LS.get(key)) return;
+
+        const a = NAMES.find(n => n.name === 'Anne');
+        const b = NAMES.find(n => n.name === 'Alberte');
+        if (!a || !b) return; // names data changed — skip rather than guess wrong
+
+        App.LS.set(key, true); // mark seen now, so an interrupted guess never repeats
+
+        const pair = Math.random() < 0.5 ? [a, b] : [b, a];
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal pop-guess-modal">
+                <h3>Gæt først: hvem er "populær"?</h3>
+                <p>Hvem tror I har flest kvinder registreret i Danmark lige nu — ${pair[0].name} eller ${pair[1].name}?</p>
+                <div class="pop-guess-choices">
+                    <button class="chip pop-guess-choice">${pair[0].name}</button>
+                    <button class="chip pop-guess-choice">${pair[1].name}</button>
+                </div>
+                <div class="pop-guess-answer hidden"></div>
+                <div class="modal-actions">
+                    <button class="primary-btn pop-guess-close hidden">Forstået</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const answerBox = overlay.querySelector('.pop-guess-answer');
+        const closeBtn = overlay.querySelector('.pop-guess-close');
+        const reveal = () => {
+            overlay.querySelectorAll('.pop-guess-choice').forEach(btn => btn.disabled = true);
+            answerBox.innerHTML = `<strong>${a.name}</strong>: ${a.pop.toLocaleString('da-DK')} kvinder i Danmark &middot; ` +
+                `<strong>${b.name}</strong>: ${b.pop.toLocaleString('da-DK')} kvinder i Danmark<br><br>` +
+                `Tallet tæller ALLE aldre — ikke hvor moderne navnet er lige nu.`;
+            answerBox.classList.remove('hidden');
+            closeBtn.classList.remove('hidden');
+        };
+        overlay.querySelectorAll('.pop-guess-choice').forEach(btn => {
+            btn.addEventListener('click', reveal);
+        });
+        closeBtn.addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
     }
 
     // Build the deck based on filters
