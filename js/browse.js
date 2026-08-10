@@ -37,10 +37,10 @@ const Browse = (() => {
     }
 
     function renderList() {
-        if (!listContainer) {
-            listContainer = document.querySelector('.name-list-container');
-            nameList = document.getElementById('name-list');
-        }
+        // Each cached element gets its own lazy-init check, so it doesn't matter
+        // which of listContainer/nameList some other function set first.
+        if (!listContainer) listContainer = document.querySelector('.name-list-container');
+        if (!nameList) nameList = document.getElementById('name-list');
 
         // Set total height for scrollbar
         const totalHeight = filteredNames.length * ROW_HEIGHT;
