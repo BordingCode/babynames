@@ -99,13 +99,19 @@ const Swipe = (() => {
         // Split into seen and unseen
         const unseen = shuffled.filter(id => !seenIds.has(id));
 
+        // On a fresh, unfiltered deck, lean the opening cards toward names
+        // people are likely to recognise, so card #1 isn't a coin flip
+        // against all 28k+ names (menu engineering: feature the "stars"
+        // without removing the rest of the menu).
+        const biased = biasTowardsPopular(unseen);
+
         // Prioritize: put the other partner's liked names first among unseen
         const otherProfile = App.activeProfile === 0 ? 1 : 0;
         const otherLiked = new Set(App.getLiked(otherProfile));
         if (otherLiked.size > 0) {
             const prioritized = [];
             const rest = [];
-            for (const id of unseen) {
+            for (const id of biased) {
                 if (otherLiked.has(id)) {
                     prioritized.push(id);
                 } else {
@@ -114,9 +120,40 @@ const Swipe = (() => {
             }
             deck = prioritized.concat(rest);
         } else {
-            deck = unseen;
+            deck = biased;
         }
         deckIndex = 0;
+    }
+
+    // Reorders an already-shuffled id list so the first WINDOW cards draw
+    // 3-in-4 from the top-2000-popularity band, then falls back to the
+    // original (fully random) order. Only touches fresh, unfiltered decks —
+    // a filtered deck is already a deliberate choice, not an entry point.
+    // Nothing is removed or locked: "Bergljot" can still be card 2.
+    function biasTowardsPopular(ids) {
+        if (Object.keys(filters).length > 0) return ids;
+
+        const threshold = getPopThreshold(2000);
+        const popular = [];
+        const rest = [];
+        for (const id of ids) {
+            (NAMES[id].pop >= threshold ? popular : rest).push(id);
+        }
+        if (popular.length === 0) return ids;
+
+        const WINDOW = 24;
+        const RATIO = 3; // 3 popular names for every 1 from the rest
+        const head = [];
+        let pi = 0, ri = 0;
+        while (head.length < WINDOW && (pi < popular.length || ri < rest.length)) {
+            for (let k = 0; k < RATIO && head.length < WINDOW && pi < popular.length; k++) {
+                head.push(popular[pi++]);
+            }
+            if (head.length < WINDOW && ri < rest.length) {
+                head.push(rest[ri++]);
+            }
+        }
+        return head.concat(popular.slice(pi)).concat(rest.slice(ri));
     }
 
     // One-time migration from old seenData (deckIndex number) to seenIds (array of IDs)
