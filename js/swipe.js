@@ -348,31 +348,35 @@ const Swipe = (() => {
         popDetail.appendChild(popVal);
         back.appendChild(popDetail);
 
-        // Origin
-        const originDetail = document.createElement('div');
-        originDetail.className = 'card-detail';
-        const originLabel = document.createElement('div');
-        originLabel.className = 'card-detail-label';
-        originLabel.textContent = 'Oprindelse';
-        originDetail.appendChild(originLabel);
-        const originVal = document.createElement('div');
-        originVal.className = 'card-detail-value';
-        originVal.textContent = name.origin || 'Ukendt';
-        originDetail.appendChild(originVal);
-        back.appendChild(originDetail);
+        // Origin — kun vis feltet når vi rent faktisk har en værdi
+        if (name.origin) {
+            const originDetail = document.createElement('div');
+            originDetail.className = 'card-detail';
+            const originLabel = document.createElement('div');
+            originLabel.className = 'card-detail-label';
+            originLabel.textContent = 'Oprindelse';
+            originDetail.appendChild(originLabel);
+            const originVal = document.createElement('div');
+            originVal.className = 'card-detail-value';
+            originVal.textContent = name.origin;
+            originDetail.appendChild(originVal);
+            back.appendChild(originDetail);
+        }
 
-        // Meaning
-        const meaningDetail = document.createElement('div');
-        meaningDetail.className = 'card-detail';
-        const meaningLabel = document.createElement('div');
-        meaningLabel.className = 'card-detail-label';
-        meaningLabel.textContent = 'Betydning';
-        meaningDetail.appendChild(meaningLabel);
-        const meaningVal = document.createElement('div');
-        meaningVal.className = 'card-detail-value';
-        meaningVal.textContent = name.meaning || 'Ukendt';
-        meaningDetail.appendChild(meaningVal);
-        back.appendChild(meaningDetail);
+        // Meaning — kun vis feltet når vi rent faktisk har en værdi
+        if (name.meaning) {
+            const meaningDetail = document.createElement('div');
+            meaningDetail.className = 'card-detail';
+            const meaningLabel = document.createElement('div');
+            meaningLabel.className = 'card-detail-label';
+            meaningLabel.textContent = 'Betydning';
+            meaningDetail.appendChild(meaningLabel);
+            const meaningVal = document.createElement('div');
+            meaningVal.className = 'card-detail-value';
+            meaningVal.textContent = name.meaning;
+            meaningDetail.appendChild(meaningVal);
+            back.appendChild(meaningDetail);
+        }
 
         // Length & syllables
         const infoDetail = document.createElement('div');
